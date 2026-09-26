@@ -4,7 +4,7 @@ A private, single-user job-search command center: import StillHiring companies, 
 jobs you actually apply to, and track every application stage through to offer / rejection.
 
 - **One user, one workspace.** No signup, no teams, no billing - login is an admin email +
-  password hash held in environment variables.
+  password held in server-only environment variables.
 - **StillHiring is a snapshot, not a dependency.** A local CLI captures the public Airtable
   shared view and upserts companies into Postgres. The deployed app never talks to Airtable
   and never needs Chromium at runtime.
@@ -13,7 +13,7 @@ jobs you actually apply to, and track every application stage through to offer /
   follow-up data are never touched (covered by tests).
 
 Stack: Next.js (App Router) · React · TypeScript · Tailwind CSS · shadcn-style UI components ·
-Prisma · PostgreSQL (Neon) · Zod · bcrypt · Vercel. Playwright is used **only** by the CLI
+Prisma · PostgreSQL (Neon) · Zod · Vercel. Playwright is used **only** by the CLI
 import script.
 
 ---
@@ -61,7 +61,7 @@ fictional companies on purpose.
 DATABASE_URL=          # pooled Postgres connection (app runtime)
 DIRECT_URL=            # direct Postgres connection (migrations)
 ADMIN_EMAIL=           # the only account allowed to log in
-ADMIN_PASSWORD_HASH=   # bcrypt hash, see below
+ADMIN_PASSWORD=        # password for that account (read server-side only)
 AUTH_SECRET=           # random 32+ char string used to sign the session cookie
 ```
 
@@ -80,34 +80,32 @@ STILL_HIRING_INSECURE_TLS=1     # only if a TLS-inspecting proxy breaks the capt
 
 Single-user by design - there is no signup, no password reset and no user table.
 
-```bash
-npm run generate-password-hash
-# ? Password: ********
-# ADMIN_EMAIL="you@example.com"
-# ADMIN_PASSWORD_HASH="$2b$12$...."
-#
-# In .env files the dollar signs must be escaped, because Next.js expands $VAR there.
-# Paste this line into .env.local instead (it is the same hash):
-# ADMIN_PASSWORD_HASH="\$2b\$12\$...."
+```env
+ADMIN_EMAIL=me@example.com
+ADMIN_PASSWORD=choose-a-long-private-password
+AUTH_SECRET=...
 ```
 
-Paste the **escaped** line into `.env.local` and generate a secret:
+Generate the secret:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Why the escaping: environment files are expanded, so an unescaped `$2b$12$...` hash arrives
-truncated and every login fails with "Incorrect email or password". The app detects a malformed
-hash and says so instead. When you set the variable in a hosting dashboard (Vercel) or export it
-in a shell, use the raw hash - there is nothing to escape there. Keep the variable defined in
-exactly one place, though: if it appears both in the shell and in a loaded `.env` file, the file's
-expansion pass rewrites the already-unescaped value and truncates it again.
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD` are read **server-side only**, inside the login server
+  action - they are never bundled into client JavaScript and never rendered into the page.
+- On Vercel, store `ADMIN_PASSWORD` as a **Sensitive Environment Variable** (Project → Settings →
+  Environment Variables, then mark it sensitive) so it cannot be read back from the dashboard or
+  written into build logs.
+- The password is compared with Node's `crypto.timingSafeEqual` instead of `===`, so a wrong guess
+  cannot be narrowed down through response timing. The email is compared case-insensitively.
+- Changing the password means editing the environment variable and redeploying: no hash to
+  generate, nothing in the database to update.
 
-How it works: login compares the submitted email with `ADMIN_EMAIL`, verifies the password with
-bcrypt against `ADMIN_PASSWORD_HASH`, then sets `job_assist_session` - an HMAC-SHA256 signed,
-HTTP-only, `SameSite=Lax` cookie (secure in production, 30-day expiry). Every `/app/*` route is
-blocked by middleware (`proxy.ts`) and every server action re-checks the session before writing.
+How it works: login compares the submitted email with `ADMIN_EMAIL`, compares the password with
+`ADMIN_PASSWORD`, then sets `job_assist_session` - an HMAC-SHA256 signed, HTTP-only, `SameSite=Lax`
+cookie (secure in production, 30-day expiry). Every `/app/*` route is blocked by middleware
+(`proxy.ts`) and every server action re-checks the session before writing.
 
 ---
 
@@ -197,7 +195,8 @@ with a different `DATABASE_URL`). The deployed app deliberately does not bundle 
 2. In Vercel: **New Project → import the repo** (framework preset: Next.js; build command and
    output are detected; `postinstall` runs `prisma generate`).
 3. Add environment variables for **Production** (and Preview if you want):
-   `DATABASE_URL`, `DIRECT_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, `AUTH_SECRET`.
+   `DATABASE_URL`, `DIRECT_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` (mark it **Sensitive**),
+   `AUTH_SECRET`.
 4. Apply migrations to Neon from your machine:
 
    ```bash
@@ -229,7 +228,6 @@ with a different `DATABASE_URL`). The deployed app deliberately does not bundle 
 | `npm run db:deploy`         | `prisma migrate deploy` (existing migrations).                 |
 | `npm run db:seed`           | Fictional dev data: 10 companies, 12 jobs, applications, events. |
 | `npm run stillhiring:sync`  | Import/refresh StillHiring companies.                          |
-| `npm run generate-password-hash` | Create the bcrypt hash for `ADMIN_PASSWORD_HASH`.         |
 
 ### Tests
 
@@ -239,9 +237,9 @@ npm run test:e2e  # unauthenticated redirect, wrong password, successful session
 ```
 
 The database tests run against `TEST_DATABASE_URL` when set; otherwise the suite derives
-`job_assist_test` from `DATABASE_URL` and applies migrations to it first. Set
-`E2E_ADMIN_PASSWORD` when the dev server's admin password differs from the default used by the
-e2e spec.
+`job_assist_test` from `DATABASE_URL` and applies migrations to it first. The e2e suite signs in
+with `ADMIN_EMAIL` + `ADMIN_PASSWORD`, so run it with those exported (or let the defaults in
+`tests/e2e/auth.spec.ts` match your `.env.local`).
 
 ---
 
@@ -261,7 +259,7 @@ lib/
   still-hiring/          # types, decode, normalize, import (used by the CLI sync)
   validation/            # zod schemas
 prisma/                  # schema, migrations, seed
-scripts/                 # sync-still-hiring, capture-shared-view, generate-password-hash
+scripts/                 # sync-still-hiring, capture-shared-view
 tests/                   # vitest specs + fixtures, tests/e2e (Playwright)
 ```
 
@@ -289,8 +287,9 @@ STILL_HIRING_URL="https://airtable.com/embed/<new-share-url>" npm run stillhirin
 **Nothing imports / `DATABASE_URL is not set`.** Copy `.env.example` to `.env.local` and run
 `npm run db:migrate` first; the sync verifies the connection before touching the dataset.
 
-**Locked out.** Regenerate the hash (`npm run generate-password-hash`) and update
-`ADMIN_PASSWORD_HASH`; no database change is required.
+**`Login is not configured`, or locked out.** `ADMIN_EMAIL` and/or `ADMIN_PASSWORD` is unset or
+empty. Set both (in `.env.local`, or in the Vercel project settings) and restart / redeploy -
+there is no hash to regenerate and no database change involved.
 
 **`MaxListenersExceededWarning: ... 11 drain listeners added to [Gzip]`.** Harmless, and not from
 this app's code: Next.js 16.3+ leaks one `drain` listener per backpressured write while streaming

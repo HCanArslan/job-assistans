@@ -1,41 +1,44 @@
 /**
- * Password handling for the single admin account.
+ * Credential checks for the single admin account.
  *
- * The bcrypt hash lives in an environment variable. Next.js processes `.env` files
- * with `$VAR` expansion, so a raw bcrypt hash (`$2b$10$...`) must be written with
- * escaped dollars (`\$2b\$10\$...`) - otherwise the value arrives truncated and every
- * login fails with a misleading "incorrect password". `describeHashProblem` turns
- * that silent failure into an actionable message.
+ * The submitted password is compared against `ADMIN_PASSWORD` through
+ * `crypto.timingSafeEqual`, so the comparison cannot leak the configured value
+ * through response timing. Both variables are server-only: they are read inside
+ * server actions, never sent to the browser, and only a boolean leaves this module.
  */
-import bcrypt from "bcryptjs";
+import { timingSafeEqual } from "node:crypto";
 
-const BCRYPT_PATTERN = /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/;
+export const LOGIN_NOT_CONFIGURED =
+  "Login is not configured. Set ADMIN_EMAIL and ADMIN_PASSWORD (see README → Authentication).";
 
-export function isBcryptHash(value: string | undefined | null): boolean {
-  return typeof value === "string" && BCRYPT_PATTERN.test(value.trim());
+/** Constant-time string comparison. The length check first is safe: lengths are not secret. */
+export function safeEqual(a: string, b: string): boolean {
+  const aBuffer = Buffer.from(a, "utf8");
+  const bBuffer = Buffer.from(b, "utf8");
+  if (aBuffer.length !== bBuffer.length) return false;
+  return timingSafeEqual(aBuffer, bBuffer);
 }
 
-/** A human-readable explanation when the configured hash cannot work, otherwise null. */
-export function describeHashProblem(value: string | undefined | null): string | null {
-  const hash = value?.trim() ?? "";
-  if (!hash) return "ADMIN_PASSWORD_HASH is not set.";
-  if (isBcryptHash(hash)) return null;
-  return [
-    "ADMIN_PASSWORD_HASH is not a valid bcrypt hash.",
-    "Run `npm run generate-password-hash` and paste the printed line; in .env files the",
-    "dollar signs must stay escaped (\\$2b\\$10\\$...) because $ is expanded there.",
-  ].join(" ");
+export interface AdminCredentials {
+  email: string;
+  password: string;
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  try {
-    return await bcrypt.compare(password, hash);
-  } catch {
-    return false;
-  }
+/** The configured admin credentials, or null when login has not been set up. */
+export function getAdminCredentials(): AdminCredentials | null {
+  const email = process.env.ADMIN_EMAIL?.trim();
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password) return null;
+  return { email, password };
 }
 
-/** Escapes a bcrypt hash so it survives `.env` file expansion. */
-export function escapeHashForEnvFile(hash: string): string {
-  return hash.replace(/\$/g, "\\$");
+/** Email matches case-insensitively; both checks always run so neither leaks by timing. */
+export function credentialsMatch(
+  email: string,
+  password: string,
+  admin: AdminCredentials,
+): boolean {
+  const emailMatches = safeEqual(email.trim().toLowerCase(), admin.email.toLowerCase());
+  const passwordMatches = safeEqual(password, admin.password);
+  return emailMatches && passwordMatches;
 }

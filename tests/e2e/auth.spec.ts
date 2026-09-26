@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const email = process.env.ADMIN_EMAIL ?? "admin@jobassist.local";
-const password = process.env.E2E_ADMIN_PASSWORD ?? "jobassist-dev";
+const password = process.env.ADMIN_PASSWORD ?? "";
 
 test.describe("single-user authentication", () => {
   test("redirects unauthenticated visitors from /app to /login", async ({ page }) => {
