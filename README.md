@@ -291,3 +291,10 @@ STILL_HIRING_URL="https://airtable.com/embed/<new-share-url>" npm run stillhirin
 
 **Locked out.** Regenerate the hash (`npm run generate-password-hash`) and update
 `ADMIN_PASSWORD_HASH`; no database change is required.
+
+**`MaxListenersExceededWarning: ... 11 drain listeners added to [Gzip]`.** Harmless, and not from
+this app's code: Next.js 16.3+ leaks one `drain` listener per backpressured write while streaming
+App Router responses through gzip (vercel/next.js#97698 fixes it; discussion #95130 confirms no
+action is needed on our side). Responses stay complete and correct - it only adds log noise, most
+visibly when a slow client streams a large page. Leave it alone, or silence it with
+`compress: false` in `next.config.ts` if the logs bother you.
