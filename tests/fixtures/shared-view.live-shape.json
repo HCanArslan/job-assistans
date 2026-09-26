@@ -1,0 +1,232 @@
+{
+  "data": {
+    "table": {
+      "id": "tblFIXTURELIVE",
+      "name": "StillHiring Companies (fixture: current shared-view shape)",
+      "columns": [
+        { "id": "fldCompanyName", "name": "Company Name", "type": "text" },
+        {
+          "id": "fldJobsPage",
+          "name": "Jobs Page",
+          "type": "button",
+          "typeOptions": { "label": "Open", "variant": "solidPurple", "actionType": "openUrl", "resultType": "text" }
+        },
+        { "id": "fldEmployees", "name": "Employees", "type": "number", "typeOptions": { "format": "integer" } },
+        {
+          "id": "fldHiringFunctions",
+          "name": "Open Roles Found by Function",
+          "type": "multiSelect",
+          "typeOptions": {
+            "choiceOrder": ["selFnEng", "selFnProduct", "selFnDesign", "selFnSales"],
+            "choices": {
+              "selFnEng": { "id": "selFnEng", "name": "Hiring Engineering" },
+              "selFnProduct": { "id": "selFnProduct", "name": "Hiring Product" },
+              "selFnDesign": { "id": "selFnDesign", "name": "Hiring Design" },
+              "selFnSales": { "id": "selFnSales", "name": "Hiring Sales" }
+            }
+          }
+        },
+        {
+          "id": "fldGrowth",
+          "name": "Keyplay Growth Signals",
+          "type": "multiSelect",
+          "typeOptions": {
+            "choiceOrder": ["selGrowthHeadcount20", "selGrowthHeadcountNeutral", "selGrowthVelHigh", "selGrowthVelModerate"],
+            "choices": {
+              "selGrowthHeadcount20": { "id": "selGrowthHeadcount20", "name": "6-mo Headcount Growth: 20%+" },
+              "selGrowthHeadcountNeutral": { "id": "selGrowthHeadcountNeutral", "name": "1-mo Headcount Growth: Neutral" },
+              "selGrowthVelHigh": { "id": "selGrowthVelHigh", "name": "Recruiting Velocity: High" },
+              "selGrowthVelModerate": { "id": "selGrowthVelModerate", "name": "Recruiting Velocity: Moderate" }
+            }
+          }
+        },
+        {
+          "id": "fldFunding",
+          "name": "Funding",
+          "type": "multiSelect",
+          "typeOptions": {
+            "choiceOrder": ["selFunding10M50M", "selFunding100MPlus", "selFundingLast4to12", "selFundingLast25Plus"],
+            "choices": {
+              "selFunding10M50M": { "id": "selFunding10M50M", "name": "Funding: $10M to $50M" },
+              "selFunding100MPlus": { "id": "selFunding100MPlus", "name": "Funding: $100M+" },
+              "selFundingLast4to12": { "id": "selFundingLast4to12", "name": "Last Funding: 4 to 12 Mos" },
+              "selFundingLast25Plus": { "id": "selFundingLast25Plus", "name": "Last Funding: 25+ Mos" }
+            }
+          }
+        },
+        { "id": "fldHqCountry", "name": "HQ Country", "type": "text" },
+        { "id": "fldHqState", "name": "HQ State", "type": "text" },
+        { "id": "fldHqCity", "name": "HQ City", "type": "text" },
+        { "id": "fldTagline", "name": "Tagline", "type": "text" },
+        {
+          "id": "fldSalesRoles",
+          "name": "Sales, Marketing, CS Open Roles Found",
+          "type": "multiSelect",
+          "typeOptions": {
+            "choiceOrder": ["selSalesAE", "selSalesSDR"],
+            "choices": {
+              "selSalesAE": { "id": "selSalesAE", "name": "Hiring AE/AM" },
+              "selSalesSDR": { "id": "selSalesSDR", "name": "Hiring SDR/BDR" }
+            }
+          }
+        },
+        {
+          "id": "fldEngRoles",
+          "name": "Engineering, Product, Design Open Roles Found",
+          "type": "multiSelect",
+          "typeOptions": {
+            "choiceOrder": ["selEngSWE", "selEngDevOps", "selEngQA"],
+            "choices": {
+              "selEngSWE": { "id": "selEngSWE", "name": "Hiring Software Engineering" },
+              "selEngDevOps": { "id": "selEngDevOps", "name": "Hiring Dev Ops" },
+              "selEngQA": { "id": "selEngQA", "name": "Hiring QA" }
+            }
+          }
+        },
+        {
+          "id": "fldRemoteHiring",
+          "name": "Remote Hiring?",
+          "type": "lookup",
+          "typeOptions": {
+            "relationColumnId": "fldRoles",
+            "canUseSelectResultType": true,
+            "choices": {
+              "selRemoteYes": { "id": "selRemoteYes", "name": "Yes" },
+              "selRemoteNo": { "id": "selRemoteNo", "name": "No" },
+              "selRemoteUnsure": { "id": "selRemoteUnsure", "name": "Not sure" }
+            },
+            "choiceOrder": ["selRemoteYes", "selRemoteNo", "selRemoteUnsure"],
+            "resultIsArray": true
+          }
+        }
+      ],
+      "rows": [
+        {
+          "id": "recLive0000000001",
+          "createdTime": "2026-02-01T16:30:48.000Z",
+          "cellValuesByColumnId": {
+            "fldCompanyName": "Nimbus Analytics",
+            "fldJobsPage": { "label": "Open", "url": "https://nimbus.example.com/careers" },
+            "fldEmployees": 320,
+            "fldHiringFunctions": ["selFnEng", "selFnProduct"],
+            "fldGrowth": ["selGrowthHeadcount20", "selGrowthVelHigh"],
+            "fldFunding": ["selFunding10M50M", "selFundingLast4to12"],
+            "fldHqCountry": "US",
+            "fldHqState": "US-WA",
+            "fldHqCity": "Seattle",
+            "fldTagline": "Streaming analytics for product teams.",
+            "fldSalesRoles": ["selSalesAE"],
+            "fldEngRoles": ["selEngSWE", "selEngDevOps"],
+            "fldRemoteHiring": {
+              "valuesByForeignRowId": {
+                "recForeign000001": ["selRemoteYes"],
+                "recForeign000002": ["selRemoteYes"]
+              },
+              "foreignRowIdOrder": ["recForeign000001", "recForeign000002"]
+            }
+          }
+        },
+        {
+          "id": "recLive0000000002",
+          "createdTime": "2026-02-02T10:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldCompanyName": "Kite Interiors",
+            "fldJobsPage": { "label": "Open", "url": "https://kite.example.com/jobs" },
+            "fldEmployees": null,
+            "fldHiringFunctions": ["selFnDesign"],
+            "fldGrowth": ["selGrowthHeadcountNeutral", "selGrowthVelModerate"],
+            "fldFunding": null,
+            "fldHqCountry": "DE",
+            "fldHqState": "DE-BE",
+            "fldHqCity": "Berlin",
+            "fldTagline": "Interior design marketplace.",
+            "fldSalesRoles": [],
+            "fldEngRoles": [],
+            "fldRemoteHiring": {
+              "valuesByForeignRowId": {
+                "recForeign000003": ["selRemoteYes"],
+                "recForeign000004": ["selRemoteNo"]
+              },
+              "foreignRowIdOrder": ["recForeign000003", "recForeign000004"]
+            }
+          }
+        },
+        {
+          "id": "recLive0000000003",
+          "createdTime": "2026-02-03T09:15:00.000Z",
+          "cellValuesByColumnId": {
+            "fldCompanyName": "Vantage Logistics",
+            "fldJobsPage": { "label": "Open" },
+            "fldEmployees": 4800,
+            "fldHiringFunctions": ["selFnEng", "selFnSales"],
+            "fldGrowth": [],
+            "fldFunding": ["selFunding100MPlus", "selFundingLast25Plus"],
+            "fldHqCountry": "NL",
+            "fldHqState": "NL-NH",
+            "fldHqCity": "Amsterdam",
+            "fldTagline": "Freight forwarding platform.",
+            "fldSalesRoles": ["selSalesSDR"],
+            "fldEngRoles": ["selEngQA"],
+            "fldRemoteHiring": {
+              "valuesByForeignRowId": {
+                "recForeign000005": ["selRemoteNo"],
+                "recForeign000006": ["selRemoteNo"],
+                "recForeign000007": ["selRemoteNo"]
+              },
+              "foreignRowIdOrder": ["recForeign000005", "recForeign000006", "recForeign000007"]
+            }
+          }
+        },
+        {
+          "id": "recLive0000000004",
+          "createdTime": "2026-02-04T08:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldCompanyName": "Orbit Health",
+            "fldJobsPage": { "label": "Open", "url": "https://orbit.example.org/roles" },
+            "fldEmployees": 210,
+            "fldHiringFunctions": ["selFnEng"],
+            "fldGrowth": ["selGrowthVelHigh"],
+            "fldFunding": ["selFunding10M50M"],
+            "fldHqCountry": "GB",
+            "fldHqState": "GB-ENG",
+            "fldHqCity": "London",
+            "fldTagline": null,
+            "fldSalesRoles": [],
+            "fldEngRoles": ["selEngSWE"],
+            "fldRemoteHiring": {
+              "valuesByForeignRowId": { "recForeign000008": ["selRemoteUnsure"] },
+              "foreignRowIdOrder": ["recForeign000008"]
+            }
+          }
+        },
+        {
+          "id": "recLive0000000005",
+          "createdTime": "2026-02-05T07:45:00.000Z",
+          "cellValuesByColumnId": {
+            "fldCompanyName": "Ashgrove Robotics",
+            "fldJobsPage": { "label": "Open", "url": "https://ashgrove.example.com/careers" },
+            "fldEmployees": 90,
+            "fldHiringFunctions": ["selFnEng", "selFnDesign"],
+            "fldGrowth": ["selGrowthVelModerate"],
+            "fldFunding": null,
+            "fldHqCountry": "IE",
+            "fldHqState": null,
+            "fldHqCity": "Dublin",
+            "fldTagline": "Warehouse automation robots.",
+            "fldSalesRoles": ["selSalesAE", "selSalesSDR"],
+            "fldEngRoles": ["selEngSWE", "selEngQA"],
+            "fldRemoteHiring": null
+          }
+        },
+        {
+          "id": "recLive0000000006",
+          "createdTime": "2026-02-06T07:45:00.000Z",
+          "cellValuesByColumnId": {
+            "fldJobsPage": { "label": "Open", "url": "https://nameless.example.com/careers" },
+            "fldEmployees": 12
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,171 @@
+// Personal job search assistant - Prisma schema.
+// Single-user application: no User/Organization models, auth lives in env vars.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+  // `url` is configured in prisma.config.ts (Prisma ORM 7).
+}
+
+enum CompanySource {
+  STILL_HIRING
+  MANUAL
+}
+
+enum RemoteHiring {
+  YES
+  NO
+  NOT_SURE
+  UNKNOWN
+}
+
+enum RemoteType {
+  REMOTE
+  HYBRID
+  ONSITE
+  UNKNOWN
+}
+
+enum ApplicationStatus {
+  INTERESTED
+  TO_APPLY
+  APPLIED
+  WAITING_REPLY
+  RECRUITER_SCREEN
+  HR_INTERVIEW
+  TECHNICAL_INTERVIEW
+  TAKE_HOME
+  LIVE_CODING
+  HIRING_MANAGER
+  FINAL_INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+  GHOSTED
+}
+
+enum ApplicationEventType {
+  STATUS_CHANGE
+  APPLIED
+  RECRUITER_CONTACT
+  HR_INTERVIEW
+  TECHNICAL_INTERVIEW
+  TAKE_HOME_RECEIVED
+  TAKE_HOME_SUBMITTED
+  LIVE_CODING
+  HIRING_MANAGER
+  FINAL_INTERVIEW
+  FOLLOW_UP
+  OFFER
+  REJECTION
+  NOTE
+  CUSTOM
+}
+
+model Company {
+  id                    String        @id @default(cuid())
+  name                  String
+  websiteUrl            String?
+  jobsUrl               String?
+  linkedinUrl           String?
+  employees             Int?
+  employeesText         String?
+  hqCountry             String?
+  hqState               String?
+  hqCity                String?
+  tagline               String?
+  remoteHiring          RemoteHiring  @default(UNKNOWN)
+  source                CompanySource @default(MANUAL)
+  sourceId              String?
+  stillHiringImportedAt DateTime?
+
+  // StillHiring hiring / growth / funding signals (normalized, human-readable).
+  hiringFunctions       String[]      @default([])
+  engineeringRoles      String[]      @default([])
+  salesMarketingCsRoles String[]      @default([])
+  growthSignals         String[]      @default([])
+  fundingSignals        String[]      @default([])
+
+  // User-owned fields - never touched by the StillHiring sync.
+  notes                 String?
+  ignored               Boolean       @default(false)
+  favorite              Boolean       @default(false)
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  jobs                  Job[]
+
+  @@unique([source, sourceId])
+  @@index([name])
+  @@index([source])
+  @@index([sourceId])
+  @@index([hqCountry])
+  @@index([remoteHiring])
+}
+
+model Job {
+  id           String         @id @default(cuid())
+  companyId    String
+  company      Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title        String
+  jobUrl       String?
+  location     String?
+  remoteType   RemoteType     @default(UNKNOWN)
+  salaryText   String?
+  description  String?
+  notes        String?
+  discoveredAt DateTime       @default(now())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  application  Application?
+
+  @@index([companyId])
+  @@index([title])
+}
+
+model Application {
+  id                String            @id @default(cuid())
+  jobId             String            @unique
+  job               Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status            ApplicationStatus @default(INTERESTED)
+  appliedAt         DateTime?
+  lastActivityAt    DateTime          @default(now())
+  nextFollowUpAt    DateTime?
+  interviewAt       DateTime?
+  salaryExpectation String?
+  recruiterName     String?
+  recruiterEmail    String?
+  referralName      String?
+  notes             String?
+  rejectionReason   String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  events            ApplicationEvent[]
+
+  @@index([status])
+  @@index([nextFollowUpAt])
+  @@index([interviewAt])
+  @@index([updatedAt])
+}
+
+model ApplicationEvent {
+  id            String               @id @default(cuid())
+  applicationId String
+  application   Application          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          ApplicationEventType
+  title         String
+  notes         String?
+  eventAt       DateTime             @default(now())
+  createdAt     DateTime             @default(now())
+
+  @@index([applicationId])
+  @@index([eventAt])
+}

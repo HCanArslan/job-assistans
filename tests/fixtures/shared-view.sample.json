@@ -1,0 +1,151 @@
+{
+  "data": {
+    "table": {
+      "id": "tblKU0jQiyIX182uU",
+      "name": "StillHiring Companies",
+      "columns": [
+        { "id": "fldekrsjTIcqFNlgA", "name": "Company Name", "type": "text" },
+        { "id": "fldGCLdaFPaVoUGNa", "name": "Jobs Page", "type": "url" },
+        { "id": "fld2uBkEnCJlWJh4Q", "name": "Employees", "type": "singleSelect" },
+        {
+          "id": "fldRHOXbozzQmP96S",
+          "name": "Open Roles Found by Function",
+          "type": "multipleSelects",
+          "typeOptions": {
+            "choices": [
+              { "id": "selENG", "name": "Hiring Engineering" },
+              { "id": "selPRD", "name": "Hiring Product" },
+              { "id": "selSLS", "name": "Hiring Sales" }
+            ]
+          }
+        },
+        {
+          "id": "fldVd9oe4yRCUDuK0",
+          "name": "Keyplay Growth Signals",
+          "type": "multipleSelects",
+          "typeOptions": {
+            "choices": [
+              { "id": "selGROW6M20", "name": "6-mo Headcount Growth: 20%+" },
+              { "id": "selVELHIGH", "name": "Recruiting Velocity: High" }
+            ]
+          }
+        },
+        {
+          "id": "fldznxiyBr1SrhMms",
+          "name": "Funding",
+          "type": "multipleSelects",
+          "typeOptions": {
+            "choices": [
+              { "id": "selFUND10M", "name": "Funding: $10M to $50M" },
+              { "id": "selLASTFUND0", "name": "Last Funding: 0-3 Mos" }
+            ]
+          }
+        },
+        { "id": "fldF4Zl4TjyURN6uT", "name": "HQ Country", "type": "singleSelect" },
+        { "id": "fldS9muQ0Ku3DApqy", "name": "HQ State", "type": "singleSelect" },
+        { "id": "fldbMzTGRHlOGk6kj", "name": "HQ City", "type": "singleSelect" },
+        { "id": "fldkvZ1oX1bRficKI", "name": "Tagline", "type": "text" },
+        {
+          "id": "fldanMFDPmhc8KzMI",
+          "name": "Sales, Marketing, CS Open Roles Found",
+          "type": "multipleSelects",
+          "typeOptions": {
+            "choices": [{ "id": "selSLS2", "name": "Hiring Sales" }]
+          }
+        },
+        {
+          "id": "fld6mppkd6IhszvHp",
+          "name": "Engineering, Product, Design Open Roles Found",
+          "type": "multipleSelects",
+          "typeOptions": {
+            "choices": [
+              { "id": "selr7HWN7IyhlVNs5", "name": "Hiring Software Engineering" },
+              { "id": "selDEVOPS", "name": "Hiring Dev Ops" },
+              { "id": "selPRODDES", "name": "Hiring Product Design" }
+            ]
+          }
+        },
+        {
+          "id": "fldom25Esjr0mos9E",
+          "name": "Remote Hiring?",
+          "type": "lookup",
+          "typeOptions": {
+            "choices": [
+              { "id": "selRMYES", "name": "Yes" },
+              { "id": "selRMNO", "name": "No" },
+              { "id": "selRMNS", "name": "Not sure" }
+            ]
+          }
+        }
+      ],
+      "rows": [
+        {
+          "id": "recFull00000000001",
+          "createdTime": "2026-08-01T10:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldekrsjTIcqFNlgA": "Acme Cloud",
+            "fldGCLdaFPaVoUGNa": "https://acme-cloud.example.com/careers",
+            "fld2uBkEnCJlWJh4Q": "51-200",
+            "fldRHOXbozzQmP96S": [["selENG", "selPRD"]],
+            "fldVd9oe4yRCUDuK0": [["selGROW6M20", "selVELHIGH"]],
+            "fldznxiyBr1SrhMms": [["selFUND10M", "selLASTFUND0"]],
+            "fldF4Zl4TjyURN6uT": "Germany",
+            "fldS9muQ0Ku3DApqy": "Berlin",
+            "fldbMzTGRHlOGk6kj": "Berlin",
+            "fldkvZ1oX1bRficKI": "Cloud infrastructure for data teams",
+            "fldanMFDPmhc8KzMI": [["selSLS2"]],
+            "fld6mppkd6IhszvHp": [["selr7HWN7IyhlVNs5", "selDEVOPS"]],
+            "fldom25Esjr0mos9E": [["selRMYES"]]
+          }
+        },
+        {
+          "id": "recPlain0000000002",
+          "createdTime": "2026-08-02T10:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldekrsjTIcqFNlgA": "Plain Text Labs",
+            "fldGCLdaFPaVoUGNa": "https://plaintext.example.com/jobs",
+            "fld2uBkEnCJlWJh4Q": 42,
+            "fldRHOXbozzQmP96S": ["Hiring Engineering"],
+            "fldVd9oe4yRCUDuK0": ["Recruiting Velocity: High"],
+            "fldznxiyBr1SrhMms": ["Funding: $10M to $50M"],
+            "fldF4Zl4TjyURN6uT": "United States",
+            "fldS9muQ0Ku3DApqy": "New York",
+            "fldbMzTGRHlOGk6kj": "New York",
+            "fldkvZ1oX1bRficKI": "Developer tooling",
+            "fldanMFDPmhc8KzMI": [],
+            "fld6mppkd6IhszvHp": ["Hiring Software Engineering", "Hiring Product Design"],
+            "fldom25Esjr0mos9E": "No"
+          }
+        },
+        {
+          "id": "recNoName000000003",
+          "createdTime": "2026-08-03T10:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldGCLdaFPaVoUGNa": "https://noname.example.com/careers",
+            "fld2uBkEnCJlWJh4Q": "11-50",
+            "fldom25Esjr0mos9E": [["selRMNS"]]
+          }
+        },
+        {
+          "id": "recLookup000000004",
+          "createdTime": "2026-08-04T10:00:00.000Z",
+          "cellValuesByColumnId": {
+            "fldekrsjTIcqFNlgA": ["Nested Lookup GmbH"],
+            "fldGCLdaFPaVoUGNa": ["https://nested.example.com/careers"],
+            "fld2uBkEnCJlWJh4Q": "1,000+",
+            "fldRHOXbozzQmP96S": [["selENG"], ["selSLS"]],
+            "fldVd9oe4yRCUDuK0": [["selVELHIGH"], ["selGROW6M20"]],
+            "fldznxiyBr1SrhMms": [["selFUND10M"]],
+            "fldF4Zl4TjyURN6uT": [["Austria"]],
+            "fldS9muQ0Ku3DApqy": [["Vienna"]],
+            "fldbMzTGRHlOGk6kj": [["Vienna"]],
+            "fldkvZ1oX1bRficKI": [["Payments for marketplaces"]],
+            "fldanMFDPmhc8KzMI": [["selSLS2"]],
+            "fld6mppkd6IhszvHp": [["selr7HWN7IyhlVNs5", "selr7HWN7IyhlVNs5"]],
+            "fldom25Esjr0mos9E": [[{ "id": "selRMNS" }]]
+          }
+        }
+      ]
+    }
+  }
+}
