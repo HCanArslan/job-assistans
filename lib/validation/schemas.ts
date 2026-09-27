@@ -3,8 +3,13 @@ import { z } from "zod";
 import { fromZonedInput } from "@/lib/format";
 import { normalizeUrl } from "@/lib/utils";
 
+/**
+ * Optional field normalizer: "" (blank), null and undefined all mean "no value".
+ * Missing keys must reach the same branch as blank ones — payloads built in code
+ * (e.g. the inline create-company path) simply omit the key instead of sending "".
+ */
 const emptyToNull = (value: unknown) =>
-  typeof value === "string" && value.trim() === "" ? null : value;
+  value === undefined || (typeof value === "string" && value.trim() === "") ? null : value;
 
 /** Optional text field: "" / null / undefined -> null. */
 export const optionalText = (max = 5000) =>
